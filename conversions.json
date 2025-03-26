@@ -1,0 +1,62 @@
+[
+  {
+    "amount": 10.0,
+    "from_currency": "UAH",
+    "to_currency": "USD",
+    "result": 0.24
+  },
+  {
+    "amount": 1000.0,
+    "from_currency": "USD",
+    "to_currency": "EUR",
+    "result": 926.0
+  },
+  {
+    "amount": 1231.0,
+    "from_currency": "USD",
+    "to_currency": "EUR",
+    "result": 1139.91
+  },
+  {
+    "amount": 1000.0,
+    "from_currency": "UAH",
+    "to_currency": "USD",
+    "result": 24.0
+  },
+  {
+    "from": "USD",
+    "to": "UAH",
+    "amount": 1000.0,
+    "result": 41710.0
+  },
+  {
+    "from": "EUR",
+    "to": "USD",
+    "amount": 1000.0,
+    "result": 1080.0
+  },
+  {
+    "from": "USD",
+    "to": "UAH",
+    "amount": 1000.0,
+    "result": 41710.0
+  },
+  {
+    "from": "UAH",
+    "to": "EUR",
+    "amount": 1000.0,
+    "result": 22.2
+  },
+  {
+    "from": "EUR",
+    "to": "UAH",
+    "amount": 1000.2,
+    "result": 45069.01
+  },
+  {
+    "from": "USD",
+    "to": "EUR",
+    "amount": 1000.234,
+    "result": 926.22
+  }
+]
