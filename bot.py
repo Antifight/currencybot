@@ -12,7 +12,6 @@ CURRENCIES = ['USD', 'EUR', 'UAH']
 EMOJI = {'USD': '🇺🇸', 'EUR': '🇪🇺', 'UAH': '🇺🇦'}
 user_state = {}
 
-
 def save_conversion(conversion):
     filename = 'conversions.json'
     if os.path.exists(filename):
@@ -31,12 +30,19 @@ def save_conversion(conversion):
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(conversions, f, ensure_ascii=False, indent=2)
 
+def safe_remove_keyboard(msg):
+    try:
+        if getattr(msg, "reply_markup", None):
+            bot.edit_message_reply_markup(msg.chat.id, msg.message_id, reply_markup=None)
+    except telebot.apihelper.ApiTelegramException as e:
+        print(f"Ошибка при удалении клавиатуры: {e}")
+    except Exception as e:
+        print(f"Непредвиденная ошибка при удалении клавиатуры: {e}")
 
 @bot.message_handler(commands=['start'])
 def welcome(message):
     bot.send_message(message.chat.id, f'👋 Привет, {message.from_user.first_name}!')
     show_main_page(message.chat.id)
-
 
 def show_main_page(chat_id):
     markup = telebot.types.InlineKeyboardMarkup()
@@ -44,10 +50,9 @@ def show_main_page(chat_id):
     markup.add(telebot.types.InlineKeyboardButton('📖 Инструкция', callback_data='show_instruction'))
     bot.send_message(chat_id, '📌 Это бот-конвертер валют. Выберите действие:', reply_markup=markup)
 
-
 @bot.callback_query_handler(func=lambda call: call.data == 'show_instruction')
 def instruction(call):
-    bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=None)
+    safe_remove_keyboard(call.message)
     markup = telebot.types.InlineKeyboardMarkup()
     markup.add(telebot.types.InlineKeyboardButton('🔙 Вернуться на главную', callback_data='return_main'))
     text = ('📌 *Инструкция по использованию:*\n\n'
@@ -58,17 +63,15 @@ def instruction(call):
             'Приятного использования!')
     bot.send_message(call.message.chat.id, text, parse_mode='Markdown', reply_markup=markup)
 
-
 @bot.callback_query_handler(func=lambda call: call.data == 'return_main')
 def return_main(call):
-    bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=None)
+    safe_remove_keyboard(call.message)
     user_state.pop(call.message.chat.id, None)  # Очистка состояния
     show_main_page(call.message.chat.id)
 
-
 @bot.callback_query_handler(func=lambda call: call.data == 'convert_currency' or call.data == 'continue_convert')
 def choose_base_currency(call):
-    bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=None)
+    safe_remove_keyboard(call.message)
     user_state.pop(call.message.chat.id, None)  # Очистка состояния 
     markup = telebot.types.InlineKeyboardMarkup()
     for curr in CURRENCIES:
@@ -76,10 +79,9 @@ def choose_base_currency(call):
     markup.add(telebot.types.InlineKeyboardButton('🔙 Вернуться на главную', callback_data='return_main'))
     bot.send_message(call.message.chat.id, '💰 Выберите исходную валюту:', reply_markup=markup)
 
-
 @bot.callback_query_handler(func=lambda call: call.data.startswith('base:'))
 def set_base_currency(call):
-    bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=None)
+    safe_remove_keyboard(call.message)
     base_currency = call.data.split(':')[1]
     user_state[call.message.chat.id] = {'base': base_currency}
     bot.send_message(call.message.chat.id, f'Выбрана валюта {base_currency}. Введите сумму для конвертации:')
